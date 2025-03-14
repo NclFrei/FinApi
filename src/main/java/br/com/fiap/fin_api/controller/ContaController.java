@@ -5,8 +5,14 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale.Category;
 
+import javax.print.DocFlavor.STRING;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +28,7 @@ import br.com.fiap.fin_api.model.TipoConta;
 @RequestMapping("contas")
 public class ContaController {
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private List<Conta> repository = new ArrayList<>();
 
     @PostMapping
@@ -36,6 +43,36 @@ public class ContaController {
     @GetMapping
     public List<Conta> index() {
         return repository;
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<Conta> get(@PathVariable Long id) {
+        log.info("Buscando categoria " + id);
+        return ResponseEntity.ok(getConta(id));
+    }
+
+    @GetMapping("/cpf/{cpf}")
+    public ResponseEntity<Conta> get(@PathVariable String cpf) {
+        log.info("Buscando categoria " + cpf);
+        return ResponseEntity.ok(getContaCPF(cpf));
+    }
+
+    private Conta getConta(Long id) {
+        return repository.stream()
+                .filter(c -> c.getId().equals(id))
+                .findFirst()
+                .orElseThrow(
+                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada")
+                );
+    }
+
+    private Conta getContaCPF(String cpf) {
+        return repository.stream()
+                .filter(c -> c.getCpfTitular().equals(cpf))
+                .findFirst()
+                .orElseThrow(() -> 
+                    new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada")
+                );
     }
 
 
