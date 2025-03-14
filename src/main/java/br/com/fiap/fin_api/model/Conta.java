@@ -1,5 +1,4 @@
 package br.com.fiap.fin_api.model;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -8,6 +7,7 @@ import java.util.Random;
 public class Conta {
     private Long id;
     private String numero;
+    
     private String nomeTitular;
     private String agencia;
     private String cpfTitular;
