@@ -14,6 +14,8 @@ public class Conta {
     private LocalDateTime dataAbertura;
     private Double saldo;
     private boolean ativa;;
+   
+
     private TipoConta tipo;
 
 
@@ -65,5 +67,8 @@ public class Conta {
         return tipo;
     }
 
+    public void setAtiva(boolean ativa) {
+        this.ativa = ativa;
+    }
 
 }
