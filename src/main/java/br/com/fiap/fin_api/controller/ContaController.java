@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.service.annotation.PatchExchange;
 
+import br.com.fiap.fin_api.Request.PixRequest;
 import br.com.fiap.fin_api.model.Conta;
 import br.com.fiap.fin_api.model.TipoConta;
 
@@ -99,15 +100,42 @@ public class ContaController {
         return ResponseEntity.ok(contaUpdate);
     }
 
+    @PostMapping("/pix")
+    public ResponseEntity<String> realizarPix(@RequestBody PixRequest pixRequest) {
+        log.info("Iniciando transferência de PIX. Conta origem: " + pixRequest.getContaOrigemId() + ", Conta destino: " + pixRequest.getContaDestinoId() + ", Valor: R$ " + pixRequest.getValor());
 
+        // Verificar se o valor é positivo
+        if (pixRequest.getValor() == null || pixRequest.getValor() <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O valor do PIX deve ser positivo.");
+        }
 
+        // Obter as contas de origem e destino
+        Conta contaOrigem = getConta(pixRequest.getContaOrigemId());
+        Conta contaDestino = getConta(pixRequest.getContaDestinoId());
 
+        // Verificar se a conta de origem tem saldo suficiente
+        if (contaOrigem.getSaldo() < pixRequest.getValor()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Saldo insuficiente na conta de origem.");
+        }
 
+        // Realizar a transferência
+        contaOrigem.setSaldo(contaOrigem.getSaldo() - pixRequest.getValor());
+        contaDestino.setSaldo(contaDestino.getSaldo() + pixRequest.getValor());
 
+        // Atualizar as contas no repositório
+        updateConta(contaOrigem);
+        updateConta(contaDestino);
 
+        // Retornar a resposta com os dados atualizados das contas
+        return ResponseEntity.ok("Transferência PIX realizada com sucesso! Saldo conta origem: R$ " + contaOrigem.getSaldo() + ", Saldo conta destino: R$ " + contaDestino.getSaldo());
+    }
 
-
-
+    private void updateConta(Conta conta) {
+        var contaIndex = repository.indexOf(conta);
+        if (contaIndex != -1) {
+            repository.set(contaIndex, conta);
+        }
+    }
 
     private Conta getConta(Long id) {
         return repository.stream()
