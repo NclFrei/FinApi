@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Locale.Category;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,11 +19,12 @@ import br.com.fiap.fin_api.model.TipoConta;
 
 
 @RestController
+@RequestMapping("contas")
 public class ContaController {
 
     private List<Conta> repository = new ArrayList<>();
 
-    @PostMapping("/contas")
+    @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
     public Conta create(@RequestBody Conta conta) {
         System.out.println("Cadastrando conta do " + conta.getNomeTitular());
@@ -29,6 +32,19 @@ public class ContaController {
         repository.add(conta);
         return conta;
     }
+
+    @GetMapping
+    public List<Conta> index() {
+        return repository;
+    }
+
+
+
+
+
+
+
+
 
     private void validarConta(Conta conta) {
         if (conta.getSaldo() < 0) {
