@@ -7,12 +7,15 @@ import java.util.Random;
 public class Conta {
     private Long id;
     private String numero;
-    
     private String nomeTitular;
     private String agencia;
     private String cpfTitular;
     private LocalDateTime dataAbertura;
     private Double saldo;
+    private Double valor;
+
+    
+
     private boolean ativa;;
    
 
@@ -31,6 +34,15 @@ public class Conta {
         this.tipo = tipo;
     }
 
+
+    public Double getValor() {
+        return valor;
+    }
+
+    public void setValor(Double valor) {
+        this.valor = valor;
+    }
+    
     public Long getId() {
         return id;
     }
@@ -69,6 +81,10 @@ public class Conta {
 
     public void setAtiva(boolean ativa) {
         this.ativa = ativa;
+    }
+
+    public void setSaldo(Double saldo) {
+        this.saldo = saldo;
     }
 
 }

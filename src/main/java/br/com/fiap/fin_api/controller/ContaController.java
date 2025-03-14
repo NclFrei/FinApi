@@ -66,9 +66,48 @@ public class ContaController {
         var ContaUpdate = getConta(id);
         ContaUpdate.setAtiva(false);
         return ResponseEntity.ok(ContaUpdate);
-
         
     }
+
+    @PatchMapping("/{id}/deposito")
+    public ResponseEntity<Conta> depositar(@PathVariable Long id, @RequestBody Conta conta) {
+        log.info("Depositando R$ " + conta.getValor() + " na conta " + id);
+
+        var contaUpdate = getConta(id);
+        if (conta.getValor() == null || conta.getValor() <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O valor do depósito deve ser positivo.");
+        }
+
+        contaUpdate.setSaldo(contaUpdate.getSaldo() + conta.getValor());
+        return ResponseEntity.ok(contaUpdate);
+    }
+
+
+    @PostMapping("/{id}/saque")
+    public ResponseEntity<Conta> sacar(@PathVariable Long id, @RequestBody Double valor) {
+        log.info("Sacando R$ " + valor + " da conta " + id);
+
+        Conta conta = getConta(id);
+        if (valor == null || valor <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O valor do saque deve ser positivo.");
+        }
+        if (valor > conta.getSaldo()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Saldo insuficiente.");
+        }
+
+        conta.setSaldo(conta.getSaldo() - valor);
+        return ResponseEntity.ok(conta);
+    }
+
+
+
+
+
+
+
+
+
+
 
     private Conta getConta(Long id) {
         return repository.stream()
