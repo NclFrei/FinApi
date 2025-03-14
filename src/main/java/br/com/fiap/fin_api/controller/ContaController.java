@@ -25,9 +25,30 @@ public class ContaController {
     @ResponseStatus(code = HttpStatus.CREATED)
     public Conta create(@RequestBody Conta conta) {
         System.out.println("Cadastrando conta do " + conta.getNomeTitular());
+        validarConta(conta);
         repository.add(conta);
         return conta;
     }
 
+    private void validarConta(Conta conta) {
+        if (conta.getSaldo() < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O saldo da conta não pode ser negativo!");
+        }
+
+        validarCampo(conta.getNomeTitular(), "O nome do titular não pode estar vazio!");
+        validarCampo(conta.getCpfTitular(), "O CPF do titular não pode estar vazio!");
+
+        
+    }
+
+    private void validarCampo(String campo, String mensagemErro) {
+        if (campo == null || campo.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, mensagemErro);
+        }
+    }
+
+    private boolean isTipoValido(TipoConta tipo) {
+        return tipo != null && EnumSet.allOf(TipoConta.class).contains(tipo);
+    }
 
 }
