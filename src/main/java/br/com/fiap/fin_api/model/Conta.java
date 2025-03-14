@@ -13,12 +13,7 @@ public class Conta {
     private LocalDateTime dataAbertura;
     private Double saldo;
     private Double valor;
-
-    
-
     private boolean ativa;;
-   
-
     private TipoConta tipo;
 
 
@@ -42,7 +37,7 @@ public class Conta {
     public void setValor(Double valor) {
         this.valor = valor;
     }
-    
+
     public Long getId() {
         return id;
     }
